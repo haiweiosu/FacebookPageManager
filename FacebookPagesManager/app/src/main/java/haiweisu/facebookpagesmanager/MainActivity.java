@@ -3,6 +3,7 @@ package haiweisu.facebookpagesmanager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
+import android.util.Log;
 
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -29,7 +30,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FacebookSdk.sdkInitialize(this.getApplicationContext());
+        //The Facebook SDK is now auto initialized on Application start.
+        // If you are using the Facebook SDK in the main process
+        // and don't need a callback on SDK initialization completion
+        // you can now remove calls to FacebookSDK.sdkInitialize.
+//        FacebookSdk.sdkInitialize(this.getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_main);
 
@@ -48,8 +53,18 @@ public class MainActivity extends AppCompatActivity {
         };
         // If the access token is available already assign it.
         accessToken = AccessToken.getCurrentAccessToken();
+        if (accessToken != null) {
+//            Intent curIntent = new Intent(this, PostMessage.class);
+            Intent curIntent = new Intent("hahah");
+            startActivity(curIntent);
+        }
 
-
+        if (loginButton.getFragment() != null) {
+            Log.i("here", "I'm here");
+            LoginManager.getInstance().logInWithPublishPermissions(loginButton.getFragment(), PERMISSIONS);
+        } else {
+            LoginManager.getInstance().logInWithPublishPermissions(MainActivity.this, PERMISSIONS);
+        }
 
 
 //        // Callback registration
