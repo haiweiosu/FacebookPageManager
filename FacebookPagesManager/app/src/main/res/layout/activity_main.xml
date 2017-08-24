@@ -16,11 +16,11 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.facebook.login.widget.LoginButton
-        android:id="@+id/loginButton"
+        android:id="@+id/login_Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp" />
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp" />
 
 </RelativeLayout>
