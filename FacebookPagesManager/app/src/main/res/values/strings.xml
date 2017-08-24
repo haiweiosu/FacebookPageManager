@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Facebook Pages Manager</string>
+    <string name="facebook_app_id">1905705509754183</string>
+    <string name="fb_login_protocol_scheme">fb1905705509754183</string>
+
 </resources>
