@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="haiweisu.facebookpagesmanager.PostMessages" >
+
+
+    <EditText
+        android:id="@+id/messagesField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="What's on your mind"
+        android:text="TextView"
+        android:layout_below="@+id/scheduleCheckBox"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <CheckBox
+        android:id="@+id/scheduleCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Schedule"
+        android:layout_alignBottom="@+id/postButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
+
+    <Button
+        android:id="@+id/viewButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Posts"
+        android:layout_alignBottom="@+id/dateField"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="46dp" />
+
+    <Button
+        android:id="@+id/postButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Make A Post"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:layout_alignBaseline="@+id/viewButton"
+        android:layout_alignBottom="@+id/viewButton"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignLeft="@+id/postButton"
+        android:layout_alignStart="@+id/postButton" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Date"
+        android:id="@+id/datebutton"
+        android:layout_below="@+id/scheduleCheckBox"
+        android:layout_toEndOf="@+id/saveButton"
+        android:layout_toRightOf="@id/saveButton" />
+
+    <TextView
+        android:id="@+id/dateField"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="Date"
+        android:textAlignment="center"
+        android:layout_marginTop="129dp"
+        android:layout_below="@+id/messagesField"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/scheduleCheckBox"
+        android:layout_alignEnd="@+id/scheduleCheckBox" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Time"
+        android:id="@+id/timebutton"
+        android:layout_below="@+id/datebutton"
+        android:layout_toEndOf="@+id/saveButton"
+        android:layout_toRightOf="@id/saveButton" />
+
+    <EditText
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/in_time"
+        android:layout_toLeftOf="@id/timebutton"
+        android:layout_below="@id/dateField"/>
+
+    <!--<EditText-->
+        <!--android:id="@+id/MessageBox"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:hint="What's on your mind"-->
+        <!--android:inputType="textMultiLine" />-->
+
+    <!--<CheckBox-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="schedule"-->
+        <!--android:id="@+id/scheduleChkBox"-->
+        <!--android:onClick="schedulePost"-->
+        <!--android:layout_alignLeft="@+id/PostButton"-->
+        <!--android:layout_below="@+id/MessageBox" />-->
+
+    <!--&lt;!&ndash;DatePicker-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/datePicker"-->
+        <!--android:layout_below="@+id/MessageBox"-->
+        <!--android:layout_alignStart="@+id/SaveButton" />-->
+    <!--<TimePicker-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/timePicker"-->
+        <!--android:layout_above="@+id/SaveButton"-->
+        <!--android:layout_toEndOf="@+id/PostButton" /&ndash;&gt;-->
+
+    <!--&lt;!&ndash;EditText-->
+        <!--android:id="@+id/DateBox"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:visibility="visible"-->
+        <!--android:hint="Date"-->
+        <!--android:layout_below="@+id/MessageBox"-->
+        <!--android:layout_alignLeft="@id/SaveButton"/>-->
+    <!--<EditText-->
+        <!--android:id="@+id/TimeBox"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:visibility="visible"-->
+        <!--android:hint="Time"-->
+        <!--android:layout_below="@+id/DateBox"-->
+        <!--android:layout_alignLeft="@id/SaveButton"/&ndash;&gt;-->
+
+
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:onClick="shareFacebook"-->
+        <!--android:text="Post"-->
+        <!--android:id="@+id/PostButton"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_alignParentStart="true" />-->
+
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:onClick="saveFacebook"-->
+        <!--android:text="Save"-->
+        <!--android:id="@+id/SaveButton"-->
+        <!--android:layout_alignTop="@+id/PostButton"-->
+        <!--android:layout_centerHorizontal="true" />-->
+
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:onClick="viewPosts"-->
+        <!--android:text="View Posts"-->
+        <!--android:id="@+id/ViewButton"-->
+        <!--android:layout_alignBottom="@+id/SaveButton"-->
+        <!--android:layout_alignParentEnd="true" />-->
+
+    <!--<Button-->
+        <!--style="?android:attr/buttonStyleSmall"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Select Date"-->
+        <!--android:id="@+id/datebutton"-->
+        <!--android:layout_below="@+id/scheduleChkBox"-->
+        <!--android:layout_toEndOf="@+id/SaveButton" />-->
+
+    <!--<EditText-->
+        <!--android:layout_width="100dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/in_date"-->
+        <!--android:layout_toLeftOf="@id/datebutton"-->
+        <!--android:layout_below="@id/scheduleChkBox"/>-->
+
+    <!--<Button-->
+        <!--style="?android:attr/buttonStyleSmall"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Select Time"-->
+        <!--android:id="@+id/timebutton"-->
+        <!--android:layout_below="@+id/datebutton"-->
+        <!--android:layout_toEndOf="@+id/SaveButton" />-->
+
+    <!--<EditText-->
+        <!--android:layout_width="100dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/in_time"-->
+        <!--android:layout_toLeftOf="@id/timebutton"-->
+        <!--android:layout_below="@id/in_date"/>-->
+
+
+</RelativeLayout>

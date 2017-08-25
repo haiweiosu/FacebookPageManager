@@ -11,6 +11,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.internal.Utility;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -24,7 +25,9 @@ public class MainActivity extends AppCompatActivity {
     protected LoginButton loginButton;
     private AccessTokenTracker accessTokenTracker;
     private AccessToken accessToken;
+    private static final String TAG = "LoginButtonActivity";
     private static final List<String> PERMISSIONS = Arrays.asList("manage_pages,publish_actions,read_insights");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,61 +43,42 @@ public class MainActivity extends AppCompatActivity {
 
         // Get Log in Button
         loginButton = (LoginButton) findViewById(R.id.login_Button);
-        // Initialize Access Token
+        loginButton.setReadPermissions(PERMISSIONS);
 
-        accessTokenTracker = new AccessTokenTracker() {
-            @Override
-            protected void onCurrentAccessTokenChanged(
-                    AccessToken oldAccessToken,
-                    AccessToken currentAccessToken) {
-                // Set the access token using
-                // currentAccessToken when it's loaded or set.
-            }
-        };
-        // If the access token is available already assign it.
         accessToken = AccessToken.getCurrentAccessToken();
-        if (accessToken != null) {
-//            Intent curIntent = new Intent(this, PostMessage.class);
-            Intent curIntent = new Intent("hahah");
+        if (AccessToken.getCurrentAccessToken() != null) {
+            Intent curIntent = new Intent(this, PostMessages.class);
             startActivity(curIntent);
         }
 
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Intent curIntent = new Intent(MainActivity.this, PostMessages.class);
+                startActivity(curIntent);
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException e) {
+
+            }
+        });
+
         if (loginButton.getFragment() != null) {
-            Log.i("here", "I'm here");
             LoginManager.getInstance().logInWithPublishPermissions(loginButton.getFragment(), PERMISSIONS);
         } else {
             LoginManager.getInstance().logInWithPublishPermissions(MainActivity.this, PERMISSIONS);
         }
-
-
-//        // Callback registration
-//        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-//            @Override
-//            public void onSuccess(LoginResult loginResult) {
-//                // App code
-//            }
-//
-//            @Override
-//            public void onCancel() {
-//                // App code
-//            }
-//
-//            @Override
-//            public void onError(FacebookException exception) {
-//                // App code
-//            }
-//        });
-    }
+}
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        accessTokenTracker.stopTracking();
     }
 }
