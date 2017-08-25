@@ -23,12 +23,12 @@ public class PostMessages extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_post_message);
+        setContentView(R.layout.activity_post_messages);
 
-        btnDatePicker=(Button)findViewById(R.id.datebutton);
-        btnTimePicker=(Button)findViewById(R.id.timebutton);
-        txtDate=(EditText)findViewById(R.id.in_date);
-        txtTime=(EditText)findViewById(R.id.in_time);
+        btnDatePicker=(Button)findViewById(R.id.dateButton);
+        btnTimePicker=(Button)findViewById(R.id.timeButton);
+        txtDate=(EditText)findViewById(R.id.dateField);
+        txtTime=(EditText)findViewById(R.id.timeField);
 
         btnDatePicker.setOnClickListener(this);
         btnTimePicker.setOnClickListener(this);
