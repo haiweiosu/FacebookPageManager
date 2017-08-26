@@ -1,8 +1,8 @@
 package haiweisu.facebookpagesmanager;
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.facebook.AccessToken;
@@ -10,8 +10,6 @@ import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.internal.Utility;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -44,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         // Get Log in Button
         loginButton = (LoginButton) findViewById(R.id.login_Button);
         loginButton.setReadPermissions(PERMISSIONS);
-
+//
         accessToken = AccessToken.getCurrentAccessToken();
         if (AccessToken.getCurrentAccessToken() != null) {
             Intent curIntent = new Intent(this, PostMessages.class);
@@ -72,7 +70,11 @@ public class MainActivity extends AppCompatActivity {
         if (loginButton.getFragment() != null) {
             LoginManager.getInstance().logInWithPublishPermissions(loginButton.getFragment(), PERMISSIONS);
         } else {
-            LoginManager.getInstance().logInWithPublishPermissions(MainActivity.this, PERMISSIONS);
+            try {
+                LoginManager.getInstance().logInWithPublishPermissions(MainActivity.this, PERMISSIONS);
+            } catch (Exception e) {
+                System.out.println(e.toString());
+            }
         }
 }
 
