@@ -14,6 +14,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,8 +23,8 @@ public class MainActivity extends AppCompatActivity {
     CallbackManager callbackManager;
     protected LoginButton loginButton;
     private AccessTokenTracker accessTokenTracker;
-    private AccessToken accessToken;
     private static final String TAG = "LoginButtonActivity";
+    private static final String PAGE_ID = "1908563859417632";
     private static final List<String> PERMISSIONS = Arrays.asList("manage_pages,publish_actions,read_insights");
 
 
@@ -41,9 +42,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Get Log in Button
         loginButton = (LoginButton) findViewById(R.id.login_Button);
-        loginButton.setReadPermissions(PERMISSIONS);
+//        loginButton.setReadPermissions(PERMISSIONS);
 //
-        accessToken = AccessToken.getCurrentAccessToken();
+        serializeAccessToken sAccessToken = new serializeAccessToken();
+        sAccessToken.accessToken = AccessToken.getCurrentAccessToken();
         if (AccessToken.getCurrentAccessToken() != null) {
             Intent curIntent = new Intent(this, PostMessages.class);
             startActivity(curIntent);
@@ -70,11 +72,7 @@ public class MainActivity extends AppCompatActivity {
         if (loginButton.getFragment() != null) {
             LoginManager.getInstance().logInWithPublishPermissions(loginButton.getFragment(), PERMISSIONS);
         } else {
-            try {
-                LoginManager.getInstance().logInWithPublishPermissions(MainActivity.this, PERMISSIONS);
-            } catch (Exception e) {
-                System.out.println(e.toString());
-            }
+            LoginManager.getInstance().logInWithPublishPermissions(MainActivity.this, PERMISSIONS);
         }
 }
 
@@ -83,4 +81,11 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
+
+    // Serialize the Access Token before put into storage
+    class serializeAccessToken implements Serializable {
+        AccessToken accessToken;
+    }
+
+
 }

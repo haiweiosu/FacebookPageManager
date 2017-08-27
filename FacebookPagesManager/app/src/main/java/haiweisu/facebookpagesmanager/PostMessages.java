@@ -2,13 +2,26 @@ package haiweisu.facebookpagesmanager;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
+import android.widget.Toast;
+
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Calendar;
 
@@ -87,5 +100,123 @@ public class PostMessages extends AppCompatActivity implements View.OnClickListe
         calendar.set(fbYear, fbMonth, fbDay, fbHour, fbMinute);
         unixTimeStamp = calendar.getTimeInMillis()/1000;
     }
+
+
+    public void schedulePost(View v) {
+    }
+
+    public void viewPosts(View v) {
+        Intent curIntent = new Intent(PostMessages.this, ViewPosts.class);
+        startActivity(curIntent);
+    }
+
+    /*
+    * @parameter View v
+    */
+    public void fbShare(View v) {
+        //has to be declared as final otherwise line 116 text doesn't work
+        final EditText text = (EditText) findViewById(R.id.messagesField);
+        final CheckBox scheduleBx = (CheckBox) findViewById(R.id.scheduleCheckBox);
+        // Initialize a Facebook Graph API Request
+        /* @param accessToken the access token to use, or null
+         * @param graphPath   the graph path to retrieve, create, or delete
+         * @param parameters  additional parameters to pass along with the Graph API request; parameters
+         * must be Strings, Numbers, Bitmaps, Dates, or Byte arrays.
+         * @param httpMethod  the {@link HttpMethod} to use for the request, or null for default
+         * (HttpMethod.GET) */
+        new GraphRequest(
+                AccessToken.getCurrentAccessToken(), "/me/accounts", null, HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString("message", text.getText().toString());
+
+                        if (scheduleBx.isChecked()) {
+                            bundle.putString("posted", "false");
+                            bundle.putLong("scheduled_post_time",unixTimeStamp);
+                        }
+                        JSONObject jsonObject = response.getJSONObject();
+                        try {
+                            JSONArray infos = jsonObject.getJSONArray("data");
+                            JSONObject objectInfo = infos.getJSONObject(0);
+                            String accessToken = objectInfo.getString("access_token");
+                            // Output the accesstoken
+                            Log.d("AccessToken", accessToken);
+                            AccessToken token = new AccessToken(accessToken,
+                                    AccessToken.getCurrentAccessToken().getApplicationId(),
+                                    AccessToken.getCurrentAccessToken().getUserId(),
+                                    AccessToken.getCurrentAccessToken().getPermissions(),
+                                    AccessToken.getCurrentAccessToken().getDeclinedPermissions(),
+                                    AccessToken.getCurrentAccessToken().getSource(),
+                                    AccessToken.getCurrentAccessToken().getExpires(),
+                                    AccessToken.getCurrentAccessToken().getLastRefresh());
+                            new GraphRequest(token, "/" + PAGE_ID + "/feed", bundle, HttpMethod.POST,
+                                    new GraphRequest.Callback() {
+                                        public void onCompleted(GraphResponse response) {
+                                            if (response.getError() == null) {
+                                                if(scheduleBx.isChecked()) {
+                                                    Toast.makeText(PostMessages.this, "Time for "
+                                                            + txtDate.getText().toString() + ", "
+                                                            + txtTime.getText().toString(), Toast.LENGTH_LONG).show();
+                                                } else {
+                                                    Toast.makeText(PostMessages.this, "Shared on Facebook Page. ",
+                                                            Toast.LENGTH_LONG).show();
+                                                }
+                                            } else {
+                                                Toast.makeText(PostMessages.this, response.getError().getErrorMessage(), Toast.LENGTH_LONG).show();
+                                                Log.d(response.getError().getErrorMessage(), "Error Messages :");
+                                            }
+                                        }
+                                    }).executeAsync();
+                        } catch (JSONException e) {
+                            Log.d(e.getMessage(), "Error Message");
+                        }
+                    }
+                }
+        ).executeAsync();
+    }
+
+    public void fbSave(View v) {
+        final EditText text = (EditText) findViewById(R.id.messagesField);
+        new GraphRequest(
+                AccessToken.getCurrentAccessToken(), "/me/accounts", null, HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString("message", text.getText().toString());
+                        bundle.putSerializable("unpublished_content_type", post_type.DRAFT);
+                        bundle.putString("posted", "false");
+                        JSONObject JsonObject = response.getJSONObject();
+                        try {
+                            JSONArray infos = JsonObject.getJSONArray("data");
+                            JSONObject objectInfo = infos.getJSONObject(0);
+                            String accessToken = objectInfo.getString("access_token");
+
+
+                            Log.d("Access Token :", AccessToken.getCurrentAccessToken().getToken());
+                            AccessToken accessToken_obj = new AccessToken(accessToken, AccessToken.getCurrentAccessToken().getApplicationId(),
+                                    AccessToken.getCurrentAccessToken().getUserId(), AccessToken.getCurrentAccessToken().getPermissions(), AccessToken.getCurrentAccessToken().getDeclinedPermissions(), AccessToken.getCurrentAccessToken().getSource(), AccessToken.getCurrentAccessToken().getExpires(), AccessToken.getCurrentAccessToken().getLastRefresh());
+
+                            new GraphRequest(accessToken_obj, "/" + PAGE_ID + "/feed", bundle, HttpMethod.POST,
+                                    new GraphRequest.Callback() {
+                                        public void onCompleted(GraphResponse response) {
+                                            if (response.getError() == null)
+                                                Toast.makeText(PostMessages.this, "Saved on facebook page.", Toast.LENGTH_LONG).show();
+                                            else {
+                                                Toast.makeText(PostMessages.this,response.getError().getErrorMessage(), Toast.LENGTH_LONG).show();
+                                                Log.d(response.getError().getErrorMessage(), "Error Message :");
+                                            }
+                                        }
+                                    }).executeAsync();
+
+                        } catch (JSONException j) {
+                            Log.d(j.getMessage(), "Error Message");
+                        }
+                    }
+                }
+        ).executeAsync();
+    }
+
+
 
 }
