@@ -24,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
+import java.util.concurrent.Exchanger;
 
 /**
  * Created by haiweisu on 8/24/17.
@@ -32,6 +33,7 @@ import java.util.Calendar;
 public class PostMessages extends AppCompatActivity implements View.OnClickListener {
 
     public enum post_type {SCHEDULED, DRAFT, ADS_POST};
+    // TODO
     private static final String PAGE_ID = "1908563859417632";
 
     private Button btnChooseDate, btnChooseTime;
@@ -129,6 +131,7 @@ public class PostMessages extends AppCompatActivity implements View.OnClickListe
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
                         Bundle bundle = new Bundle();
+                        System.out.println(AccessToken.getCurrentAccessToken().toString());
                         bundle.putString("message", text.getText().toString());
 
                         if (scheduleBx.isChecked()) {
@@ -150,7 +153,7 @@ public class PostMessages extends AppCompatActivity implements View.OnClickListe
                                     AccessToken.getCurrentAccessToken().getSource(),
                                     AccessToken.getCurrentAccessToken().getExpires(),
                                     AccessToken.getCurrentAccessToken().getLastRefresh());
-                            new GraphRequest(token, "/" + PAGE_ID + "/feed", bundle, HttpMethod.POST,
+                            new GraphRequest(AccessToken.getCurrentAccessToken(), "/" + PAGE_ID + "/feed", bundle, HttpMethod.POST,
                                     new GraphRequest.Callback() {
                                         public void onCompleted(GraphResponse response) {
                                             if (response.getError() == null) {
@@ -169,6 +172,8 @@ public class PostMessages extends AppCompatActivity implements View.OnClickListe
                                         }
                                     }).executeAsync();
                         } catch (JSONException e) {
+                            Log.d(e.getMessage(), "Error Message");
+                        } catch (Exception e) {
                             Log.d(e.getMessage(), "Error Message");
                         }
                     }
