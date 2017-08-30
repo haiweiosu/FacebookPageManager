@@ -21,6 +21,7 @@ public class ViewPosts extends AppCompatActivity {
     /**
      * The {@link ViewPager} will host section contents
      */
+
     private ViewPager fbViewPager;
 
     @Override
@@ -30,15 +31,30 @@ public class ViewPosts extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        fbFragmentPagerAdapter = new FragmentPagerAdapter() {
+        fbFragmentPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
-                return Place
+                return SectionFragment.newInstance(position + 1);
             }
 
             @Override
             public int getCount() {
-                return 0;
+                return 4;
+            }
+
+            @Override
+            public String getPageTitle(int position) {
+                switch (position) {
+                    case 0:
+                        return "Published Posts";
+                    case 1:
+                        return "Unpublished Posts";
+                    case 2:
+                        return "Page Statistics";
+                    case 3:
+                        return "Post Stastistics";
+                }
+                return null;
             }
         }
     }
