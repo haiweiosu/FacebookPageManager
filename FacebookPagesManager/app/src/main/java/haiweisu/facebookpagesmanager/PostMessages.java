@@ -145,14 +145,6 @@ public class PostMessages extends AppCompatActivity implements View.OnClickListe
                             String accessToken = objectInfo.getString("access_token");
                             // Output the accesstoken
                             Log.d("AccessToken", accessToken);
-                            AccessToken token = new AccessToken(accessToken,
-                                    AccessToken.getCurrentAccessToken().getApplicationId(),
-                                    AccessToken.getCurrentAccessToken().getUserId(),
-                                    AccessToken.getCurrentAccessToken().getPermissions(),
-                                    AccessToken.getCurrentAccessToken().getDeclinedPermissions(),
-                                    AccessToken.getCurrentAccessToken().getSource(),
-                                    AccessToken.getCurrentAccessToken().getExpires(),
-                                    AccessToken.getCurrentAccessToken().getLastRefresh());
                             new GraphRequest(AccessToken.getCurrentAccessToken(), "/" + PAGE_ID + "/feed", bundle, HttpMethod.POST,
                                     new GraphRequest.Callback() {
                                         public void onCompleted(GraphResponse response) {
@@ -199,10 +191,7 @@ public class PostMessages extends AppCompatActivity implements View.OnClickListe
 
 
                             Log.d("Access Token :", AccessToken.getCurrentAccessToken().getToken());
-                            AccessToken accessToken_obj = new AccessToken(accessToken, AccessToken.getCurrentAccessToken().getApplicationId(),
-                                    AccessToken.getCurrentAccessToken().getUserId(), AccessToken.getCurrentAccessToken().getPermissions(), AccessToken.getCurrentAccessToken().getDeclinedPermissions(), AccessToken.getCurrentAccessToken().getSource(), AccessToken.getCurrentAccessToken().getExpires(), AccessToken.getCurrentAccessToken().getLastRefresh());
-
-                            new GraphRequest(accessToken_obj, "/" + PAGE_ID + "/feed", bundle, HttpMethod.POST,
+                            new GraphRequest(AccessToken.getCurrentAccessToken(), "/" + PAGE_ID + "/feed", bundle, HttpMethod.POST,
                                     new GraphRequest.Callback() {
                                         public void onCompleted(GraphResponse response) {
                                             if (response.getError() == null)
