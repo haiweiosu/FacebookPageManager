@@ -33,7 +33,7 @@ public class SectionFragment extends Fragment {
     private static final String argSectionNumber = "section_number";
     private static final String pageId = "1908563859417632";
     private static final String accountPath = "/me/accounts";
-    private static final String getFeedPath = "/" + PAGE_ID + "/feed";
+    private static final String getFeedPath = "/" + pageId + "/feed";
 
     public SectionFragment() {
 
@@ -46,7 +46,7 @@ public class SectionFragment extends Fragment {
     public static SectionFragment newInstance(int sectionNumber) {
         SectionFragment sFragment = new SectionFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(ARG_SECTION_NUMBER, sectionNumber);
+        bundle.putInt(argSectionNumber, sectionNumber);
         sFragment.setArguments(bundle);
         return sFragment;
     }
@@ -58,7 +58,7 @@ public class SectionFragment extends Fragment {
     private GraphRequestAsyncTask getGraphRequest(final TableLayout tableLayout) {
         GraphRequestAsyncTask request = new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
-                accountPATH,
+                accountPath,
                 null,
                 HttpMethod.GET,
                 new GraphRequest.Callback() {
@@ -71,7 +71,7 @@ public class SectionFragment extends Fragment {
 
                             Log.d("Access Token :", AccessToken.getCurrentAccessToken().getToken());
 
-                            new GraphRequest(AccessToken.getCurrentAccessToken(), getFeedPATH,
+                            new GraphRequest(AccessToken.getCurrentAccessToken(), getFeedPath,
                                     null, HttpMethod.GET,
                                     new GraphRequest.Callback() {
                                         public void onCompleted(GraphResponse response) {
@@ -126,7 +126,7 @@ public class SectionFragment extends Fragment {
 
     /**
      * This is function will be called when ARG_SECTION_ NUMBER is 4
-     * And it will get number of views and likes for given insights.
+     * And it will get number of views and likes for given post.
      *
      * @param response
      */
@@ -173,6 +173,12 @@ public class SectionFragment extends Fragment {
             Log.d(response.getError().getErrorMessage(), "Error Message :");
         }
     }
+
+    /**
+     * This function will get Facebook Pages stats.
+     * @param response
+     * @param tableLayout
+     */
 
     public void onCompletedForPageStats(GraphResponse response, TableLayout tableLayout) {
 
@@ -290,7 +296,7 @@ public class SectionFragment extends Fragment {
                                     Bundle bundle = new Bundle();
                                     bundle.putString("fields", "message,insights.metric(post_impressions,post_reactions_like_total)");
 
-                                    new GraphRequest(AccessToken.getCurrentAccessToken(), getFeedPATH, bundle, HttpMethod.GET,
+                                    new GraphRequest(AccessToken.getCurrentAccessToken(), getFeedPath, bundle, HttpMethod.GET,
                                             new GraphRequest.Callback() {
                                                 @Override
                                                 public void onCompleted(GraphResponse response) {
@@ -326,33 +332,21 @@ public class SectionFragment extends Fragment {
         final StringBuilder publishedPosts = new StringBuilder();
         final StringBuilder unPublishedPosts = new StringBuilder();
         GraphRequestAsyncTask graphRequest;
-        int n = getArguments().getInt(ARG_SECTION_NUMBER);
+        int n = getArguments().getInt(argSectionNumber);
         switch (n) {
             case 1:
             case 2:
-                break;
+                getGraphRequest(tableLayout);
+                return rootView;
             case 3:
-                break;
+                getGraphRequestForViewsAndLikes(tableLayout, "3");
+                return rootView;
             case 4:
-                break;
+                getGraphRequestForViewsAndLikes(tableLayout, "4");
+                return rootView;
             default:
                 throw new IllegalStateException("Invalid number " + n);
         }
-
-        if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) {
-            graphRequest = getGraphRequest(tableLayout);
-        }
-        if (getArguments().getInt(ARG_SECTION_NUMBER) == 2) {
-            GraphRequestAsyncTask graphRequest2 = getGraphRequest(tableLayout);
-        }
-        if (getArguments().getInt(ARG_SECTION_NUMBER) == 4) {
-            GraphRequest graphRequest4 = getGraphRequestForViewsAndLikes(tableLayout, ARG_SECTION_NUMBER);
-        }
-        if (getArguments().getInt(ARG_SECTION_NUMBER) == 3) {
-            GraphRequest graphRequest3 = getGraphRequestForViewsAndLikes(tableLayout, ARG_SECTION_NUMBER);
-        }
-
-        return rootView;
     }
 
     public void getLikes(AccessToken accessToken_obj, String postID, GraphRequest.Callback callback) {

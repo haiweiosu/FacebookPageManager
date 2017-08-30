@@ -48,6 +48,11 @@
 
         <activity android:name=".PostMessages"
             android:label="@string/app_name" />
+
+        <activity
+            android:name=".ViewPosts"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
