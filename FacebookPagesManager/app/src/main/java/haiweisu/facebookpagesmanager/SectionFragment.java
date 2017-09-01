@@ -33,7 +33,8 @@ public class SectionFragment extends Fragment {
     private static final String argSectionNumber = "section_number";
     private static final String pageId = "1908563859417632";
     private static final String accountPath = "/me/accounts";
-    private static final String getFeedPath = "/" + pageId + "/feed";
+    private static final String getPublishedFeedPath = "/" + pageId + "/feed";
+    private static final String getUnpublishedPath = "/" + pageId + "/promotable_posts";
 
     public SectionFragment() {
 
@@ -55,7 +56,7 @@ public class SectionFragment extends Fragment {
      * This function will return a new instance of Facebook Graph API
      */
 
-    private GraphRequestAsyncTask getGraphRequest(final TableLayout tableLayout) {
+    private GraphRequestAsyncTask getGraphRequest(final TableLayout tableLayout, final String argSectionNumber) {
         GraphRequestAsyncTask request = new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 accountPath,
@@ -65,13 +66,16 @@ public class SectionFragment extends Fragment {
                     public void onCompleted(GraphResponse response) {
                         JSONObject jsonObject = response.getJSONObject();
                         try {
+                            if (argSectionNumber.equals("2")) {
+                                Bundle bundle = new Bundle();
+                                bundle.putBoolean("is_published", false);
+                            }
                             JSONArray infos = jsonObject.getJSONArray("data");
                             JSONObject objectInfo = infos.getJSONObject(0);
-                            String accessToken = objectInfo.getString("access_token");
 
                             Log.d("Access Token :", AccessToken.getCurrentAccessToken().getToken());
 
-                            new GraphRequest(AccessToken.getCurrentAccessToken(), getFeedPath,
+                            new GraphRequest(AccessToken.getCurrentAccessToken(), getPublishedFeedPath,
                                     null, HttpMethod.GET,
                                     new GraphRequest.Callback() {
                                         public void onCompleted(GraphResponse response) {
@@ -335,8 +339,9 @@ public class SectionFragment extends Fragment {
         int n = getArguments().getInt(argSectionNumber);
         switch (n) {
             case 1:
+                getGraphRequest(tableLayout, "1");
             case 2:
-                getGraphRequest(tableLayout);
+                getGraphRequest(tableLayout, "2");
                 return rootView;
             case 3:
                 getGraphRequestForViewsAndLikes(tableLayout, "3");

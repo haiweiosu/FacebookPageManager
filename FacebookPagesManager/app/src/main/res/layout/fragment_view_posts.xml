@@ -14,17 +14,16 @@
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:scrollbars="none"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:scrollbars="none">
 
         <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/maintable"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:stretchColumns="*"
-            android:id="@+id/maintable"
-            android:scrollbars = "vertical"
-            android:showDividers="middle">
-        </TableLayout>
+            android:scrollbars="vertical"
+            android:showDividers="middle"
+            android:stretchColumns="*"></TableLayout>
     </ScrollView>
 
 </RelativeLayout>

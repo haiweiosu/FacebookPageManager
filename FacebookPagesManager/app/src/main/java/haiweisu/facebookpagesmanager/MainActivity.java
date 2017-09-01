@@ -3,7 +3,6 @@ package haiweisu.facebookpagesmanager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -20,13 +19,12 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    CallbackManager callbackManager;
-    protected LoginButton loginButton;
-    private AccessTokenTracker accessTokenTracker;
     private static final String TAG = "LoginButtonActivity";
     private static final String PAGE_ID = "1908563859417632";
     private static final List<String> PERMISSIONS = Arrays.asList("manage_pages,publish_actions,read_insights");
-
+    protected LoginButton loginButton;
+    CallbackManager callbackManager;
+    private AccessTokenTracker accessTokenTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             LoginManager.getInstance().logInWithPublishPermissions(MainActivity.this, PERMISSIONS);
         }
-}
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

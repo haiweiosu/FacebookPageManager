@@ -8,7 +8,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.widget.TableLayout;
+import android.view.MenuItem;
 
 /**
  * Created by haiweisu on 8/27/17.
@@ -75,6 +75,30 @@ public class ViewPosts extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_);
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    /**
+     * This function will control the action clicked from action bar.
+     *
+     * @param item
+     * @return true
+     */
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public StringBuilder getPublishedPosts() {
+        StringBuilder publishedPosts = new StringBuilder();
+        return publishedPosts;
     }
 }
