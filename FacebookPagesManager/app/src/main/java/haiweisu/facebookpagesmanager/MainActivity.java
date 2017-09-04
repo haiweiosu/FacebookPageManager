@@ -3,6 +3,7 @@ package haiweisu.facebookpagesmanager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -21,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginButtonActivity";
     private static final String PAGE_ID = "1908563859417632";
-    private static final List<String> PERMISSIONS = Arrays.asList("manage_pages,publish_actions,read_insights");
+    private static final List<String> PERMISSIONS = Arrays.asList("manage_pages","publish_actions","publish_pages");
     protected LoginButton loginButton;
     CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
@@ -40,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Get Log in Button
         loginButton = (LoginButton) findViewById(R.id.login_Button);
-//        loginButton.setReadPermissions(PERMISSIONS);
 //
         serializeAccessToken sAccessToken = new serializeAccessToken();
         sAccessToken.accessToken = AccessToken.getCurrentAccessToken();
@@ -66,11 +66,14 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-        if (loginButton.getFragment() != null) {
-            LoginManager.getInstance().logInWithPublishPermissions(loginButton.getFragment(), PERMISSIONS);
-        } else {
-            LoginManager.getInstance().logInWithPublishPermissions(MainActivity.this, PERMISSIONS);
+        try {
+            if (loginButton.getFragment() != null) {
+                LoginManager.getInstance().logInWithPublishPermissions(loginButton.getFragment(), PERMISSIONS);
+            } else {
+                LoginManager.getInstance().logInWithPublishPermissions(MainActivity.this, PERMISSIONS);
+            }
+        } catch (Exception e) {
+            Log.d("this is exception", e.toString());
         }
     }
 

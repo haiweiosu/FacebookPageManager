@@ -56,7 +56,12 @@ public class SectionFragment extends Fragment {
      * This function will return a new instance of Facebook Graph API
      */
 
-    private GraphRequestAsyncTask getGraphRequest(final TableLayout tableLayout, final String argSectionNumber) {
+    private GraphRequestAsyncTask getGraphRequest(final TableLayout tableLayout, final String argSectionNumber, final StringBuilder fbPublishedPosta) {
+
+        final Bundle bundle = new Bundle();
+        if (argSectionNumber.equals("2")) {
+            bundle.putBoolean("is_published", false);
+        }
         GraphRequestAsyncTask request = new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 accountPath,
@@ -66,17 +71,19 @@ public class SectionFragment extends Fragment {
                     public void onCompleted(GraphResponse response) {
                         JSONObject jsonObject = response.getJSONObject();
                         try {
-                            if (argSectionNumber.equals("2")) {
-                                Bundle bundle = new Bundle();
-                                bundle.putBoolean("is_published", false);
-                            }
                             JSONArray infos = jsonObject.getJSONArray("data");
-                            JSONObject objectInfo = infos.getJSONObject(0);
+                            JSONObject objectdata = infos.getJSONObject(0);
+                            String accessToken = objectdata.getString("access_token");
 
                             Log.d("Access Token :", AccessToken.getCurrentAccessToken().getToken());
+                            AccessToken accessToken_obj = new AccessToken(accessToken, AccessToken.getCurrentAccessToken().getApplicationId(),
+                                    AccessToken.getCurrentAccessToken().getUserId(), AccessToken.getCurrentAccessToken().getPermissions(),
+                                    AccessToken.getCurrentAccessToken().getDeclinedPermissions(), AccessToken.getCurrentAccessToken().getSource(),
+                                    AccessToken.getCurrentAccessToken().getExpires(), AccessToken.getCurrentAccessToken().getLastRefresh());
 
-                            new GraphRequest(AccessToken.getCurrentAccessToken(), getPublishedFeedPath,
-                                    null, HttpMethod.GET,
+                            new GraphRequest(accessToken_obj,
+                                    argSectionNumber.equals("2") ? getUnpublishedPath : getPublishedFeedPath,
+                                    argSectionNumber.equals("2") ? bundle : null, HttpMethod.GET,
                                     new GraphRequest.Callback() {
                                         public void onCompleted(GraphResponse response) {
                                             if (response.getError() == null) {
@@ -86,7 +93,9 @@ public class SectionFragment extends Fragment {
                                                         JSONObject o = info.getJSONObject(i);
                                                         String message = o.getString("message");
                                                         String createdTime = o.getString("created_time");
-
+                                                        if (argSectionNumber.equals("2")) {
+                                                            fbPublishedPosta.append(message);
+                                                        }
                                                         TextView view1 = new TextView(getActivity());
                                                         view1.setText(message);
                                                         view1.setTextSize(15);
@@ -134,7 +143,7 @@ public class SectionFragment extends Fragment {
      *
      * @param response
      */
-    public void onCompletedForViewsAndLikes(GraphResponse response, TableLayout tableLayout) {
+    private void onCompletedForViewsAndLikes(GraphResponse response, TableLayout tableLayout) {
 
         if (response.getError() == null) {
 
@@ -184,7 +193,7 @@ public class SectionFragment extends Fragment {
      * @param tableLayout
      */
 
-    public void onCompletedForPageStats(GraphResponse response, TableLayout tableLayout) {
+    private void onCompletedForPageStats(GraphResponse response, TableLayout tableLayout) {
 
         if (response.getError() == null) {
 
@@ -300,7 +309,7 @@ public class SectionFragment extends Fragment {
                                     Bundle bundle = new Bundle();
                                     bundle.putString("fields", "message,insights.metric(post_impressions,post_reactions_like_total)");
 
-                                    new GraphRequest(AccessToken.getCurrentAccessToken(), getFeedPath, bundle, HttpMethod.GET,
+                                    new GraphRequest(AccessToken.getCurrentAccessToken(), getPublishedFeedPath, bundle, HttpMethod.GET,
                                             new GraphRequest.Callback() {
                                                 @Override
                                                 public void onCompleted(GraphResponse response) {
@@ -339,9 +348,10 @@ public class SectionFragment extends Fragment {
         int n = getArguments().getInt(argSectionNumber);
         switch (n) {
             case 1:
-                getGraphRequest(tableLayout, "1");
+                getGraphRequest(tableLayout, "1", publishedPosts);
+                return rootView;
             case 2:
-                getGraphRequest(tableLayout, "2");
+                getGraphRequest(tableLayout, "2", publishedPosts);
                 return rootView;
             case 3:
                 getGraphRequestForViewsAndLikes(tableLayout, "3");

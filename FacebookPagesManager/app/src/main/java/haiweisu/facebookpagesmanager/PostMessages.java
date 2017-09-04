@@ -182,16 +182,19 @@ public class PostMessages extends AppCompatActivity implements View.OnClickListe
                         Bundle bundle = new Bundle();
                         bundle.putString("message", text.getText().toString());
                         bundle.putSerializable("unpublished_content_type", post_type.DRAFT);
-                        bundle.putString("posted", "false");
+                        bundle.putString("published", "false");
                         JSONObject JsonObject = response.getJSONObject();
                         try {
                             JSONArray infos = JsonObject.getJSONArray("data");
                             JSONObject objectInfo = infos.getJSONObject(0);
                             String accessToken = objectInfo.getString("access_token");
 
-
+                            AccessToken accessToken_obj = new AccessToken(accessToken, AccessToken.getCurrentAccessToken().getApplicationId(),
+                                    AccessToken.getCurrentAccessToken().getUserId(), AccessToken.getCurrentAccessToken().getPermissions(),
+                                    AccessToken.getCurrentAccessToken().getDeclinedPermissions(), AccessToken.getCurrentAccessToken().getSource(),
+                                    AccessToken.getCurrentAccessToken().getExpires(), AccessToken.getCurrentAccessToken().getLastRefresh());
                             Log.d("Access Token :", AccessToken.getCurrentAccessToken().getToken());
-                            new GraphRequest(AccessToken.getCurrentAccessToken(), "/" + PAGE_ID + "/feed", bundle, HttpMethod.POST,
+                            new GraphRequest(accessToken_obj, "/" + PAGE_ID + "/feed", bundle, HttpMethod.POST,
                                     new GraphRequest.Callback() {
                                         public void onCompleted(GraphResponse response) {
                                             if (response.getError() == null)
