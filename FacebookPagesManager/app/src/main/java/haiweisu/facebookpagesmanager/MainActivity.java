@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginButtonActivity";
     private static final String PAGE_ID = "1908563859417632";
-    private static final List<String> PERMISSIONS = Arrays.asList("manage_pages","publish_actions","publish_pages");
+    private static final List<String> PERMISSIONS = Arrays.asList("manage_pages", "publish_actions", "publish_pages");
     protected LoginButton loginButton;
     CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;

@@ -4,15 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/mamasukitchen"
+    android:tileMode="repeat"
     tools:context="haiweisu.facebookpagesmanager.MainActivity">
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/login_Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="30dp"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="100dp" />
+        android:height="20dp"
+        android:text="Log in" />
 
 </RelativeLayout>
