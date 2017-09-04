@@ -24,7 +24,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
-import java.util.concurrent.Exchanger;
 
 /**
  * Created by haiweisu on 8/24/17.
@@ -32,10 +31,7 @@ import java.util.concurrent.Exchanger;
 
 public class PostMessages extends AppCompatActivity implements View.OnClickListener {
 
-    public enum post_type {SCHEDULED, DRAFT, ADS_POST};
-    // TODO
     private static final String PAGE_ID = "1908563859417632";
-
     private Button btnChooseDate, btnChooseTime;
     private EditText txtDate, txtTime;
     private int fbYear, fbMonth, fbDay, fbHour, fbMinute;
@@ -46,10 +42,10 @@ public class PostMessages extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_messages);
 
-        btnChooseDate=(Button)findViewById(R.id.dateButton);
-        btnChooseTime =(Button)findViewById(R.id.timeButton);
-        txtDate=(EditText)findViewById(R.id.dateField);
-        txtTime=(EditText)findViewById(R.id.timeField);
+        btnChooseDate = (Button) findViewById(R.id.dateButton);
+        btnChooseTime = (Button) findViewById(R.id.timeButton);
+        txtDate = (EditText) findViewById(R.id.dateField);
+        txtTime = (EditText) findViewById(R.id.timeField);
 
         btnChooseDate.setOnClickListener(this);
         btnChooseTime.setOnClickListener(this);
@@ -79,7 +75,7 @@ public class PostMessages extends AppCompatActivity implements View.OnClickListe
             datePickerDialog.show();
         }
 
-       // If Schedule is chosen
+        // If Schedule is chosen
         if (v == btnChooseTime) {
 
             //Get Time
@@ -100,9 +96,8 @@ public class PostMessages extends AppCompatActivity implements View.OnClickListe
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(fbYear, fbMonth, fbDay, fbHour, fbMinute);
-        unixTimeStamp = calendar.getTimeInMillis()/1000;
+        unixTimeStamp = calendar.getTimeInMillis() / 1000;
     }
-
 
     public void schedulePost(View v) {
     }
@@ -112,10 +107,11 @@ public class PostMessages extends AppCompatActivity implements View.OnClickListe
         startActivity(curIntent);
     }
 
-    /*
-    * @parameter View v
-    */
-    public void fbShare(View v) {
+    /**
+     * This function will post the published page status to Facebook Page -- Mama Su's Kitchen
+     * @param v
+     */
+    public void fbPost(View v) {
         //has to be declared as final otherwise line 116 text doesn't work
         final EditText text = (EditText) findViewById(R.id.messagesField);
         final CheckBox scheduleBx = (CheckBox) findViewById(R.id.scheduleCheckBox);
@@ -136,20 +132,28 @@ public class PostMessages extends AppCompatActivity implements View.OnClickListe
 
                         if (scheduleBx.isChecked()) {
                             bundle.putString("posted", "false");
-                            bundle.putLong("scheduled_post_time",unixTimeStamp);
+                            bundle.putLong("scheduled_post_time", unixTimeStamp);
                         }
                         JSONObject jsonObject = response.getJSONObject();
                         try {
                             JSONArray infos = jsonObject.getJSONArray("data");
                             JSONObject objectInfo = infos.getJSONObject(0);
                             String accessToken = objectInfo.getString("access_token");
+
+                            // Getting the accesstoken object for corresponding Facebook Page
+                            // If not using accesstoken for page instead of account accesstoken
+                            // Post will become "Visitor comment" instead of official Page Post
+                            AccessToken accessToken_obj = new AccessToken(accessToken, AccessToken.getCurrentAccessToken().getApplicationId(),
+                                    AccessToken.getCurrentAccessToken().getUserId(), AccessToken.getCurrentAccessToken().getPermissions(),
+                                    AccessToken.getCurrentAccessToken().getDeclinedPermissions(), AccessToken.getCurrentAccessToken().getSource(),
+                                    AccessToken.getCurrentAccessToken().getExpires(), AccessToken.getCurrentAccessToken().getLastRefresh());
                             // Output the accesstoken
-                            Log.d("AccessToken", accessToken);
-                            new GraphRequest(AccessToken.getCurrentAccessToken(), "/" + PAGE_ID + "/feed", bundle, HttpMethod.POST,
+                            Log.d("AccessToken", accessToken_obj.toString());
+                            new GraphRequest(accessToken_obj, "/" + PAGE_ID + "/feed", bundle, HttpMethod.POST,
                                     new GraphRequest.Callback() {
                                         public void onCompleted(GraphResponse response) {
                                             if (response.getError() == null) {
-                                                if(scheduleBx.isChecked()) {
+                                                if (scheduleBx.isChecked()) {
                                                     Toast.makeText(PostMessages.this, "Time for "
                                                             + txtDate.getText().toString() + ", "
                                                             + txtTime.getText().toString(), Toast.LENGTH_LONG).show();
@@ -173,6 +177,11 @@ public class PostMessages extends AppCompatActivity implements View.OnClickListe
         ).executeAsync();
     }
 
+    /**
+     * This function will store the unpublished posts to the corresponding section and not post to actual Facebook Page
+     * @param v
+     */
+
     public void fbSave(View v) {
         final EditText text = (EditText) findViewById(R.id.messagesField);
         new GraphRequest(
@@ -189,6 +198,7 @@ public class PostMessages extends AppCompatActivity implements View.OnClickListe
                             JSONObject objectInfo = infos.getJSONObject(0);
                             String accessToken = objectInfo.getString("access_token");
 
+                            // Creating a Facebook Pages ID access token
                             AccessToken accessToken_obj = new AccessToken(accessToken, AccessToken.getCurrentAccessToken().getApplicationId(),
                                     AccessToken.getCurrentAccessToken().getUserId(), AccessToken.getCurrentAccessToken().getPermissions(),
                                     AccessToken.getCurrentAccessToken().getDeclinedPermissions(), AccessToken.getCurrentAccessToken().getSource(),
@@ -200,7 +210,7 @@ public class PostMessages extends AppCompatActivity implements View.OnClickListe
                                             if (response.getError() == null)
                                                 Toast.makeText(PostMessages.this, "Saved on facebook page.", Toast.LENGTH_LONG).show();
                                             else {
-                                                Toast.makeText(PostMessages.this,response.getError().getErrorMessage(), Toast.LENGTH_LONG).show();
+                                                Toast.makeText(PostMessages.this, response.getError().getErrorMessage(), Toast.LENGTH_LONG).show();
                                                 Log.d(response.getError().getErrorMessage(), "Error Message :");
                                             }
                                         }
@@ -214,6 +224,7 @@ public class PostMessages extends AppCompatActivity implements View.OnClickListe
         ).executeAsync();
     }
 
+    public enum post_type {SCHEDULED, DRAFT, ADS_POST}
 
 
 }
