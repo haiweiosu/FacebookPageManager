@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.facebook.AccessToken;
-import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -20,12 +19,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "LoginButtonActivity";
-    private static final String PAGE_ID = "1908563859417632";
     private static final List<String> PERMISSIONS = Arrays.asList("manage_pages", "publish_actions", "publish_pages");
     protected LoginButton loginButton;
     CallbackManager callbackManager;
-    private AccessTokenTracker accessTokenTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Get Log in Button
         loginButton = (LoginButton) findViewById(R.id.login_Button);
-//
         serializeAccessToken sAccessToken = new serializeAccessToken();
         sAccessToken.accessToken = AccessToken.getCurrentAccessToken();
         if (AccessToken.getCurrentAccessToken() != null) {
@@ -58,12 +53,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-
+                Log.e("cancel", "Cancelled log in");
             }
 
             @Override
             public void onError(FacebookException e) {
-
+                Log.d("Log in Error", e.toString());
             }
         });
         try {
