@@ -35,6 +35,10 @@ public class SectionFragment extends Fragment {
     private static final String accountPath = "/me/accounts";
     private static final String getPublishedFeedPath = "/" + pageId + "/feed";
     private static final String getUnpublishedPath = "/" + pageId + "/promotable_posts";
+    private static final String getPublishedPosts = "/" + pageId + "/posts";
+    private static final String getPage = "/" + pageId + "/";
+    private static final String invalidNumber = "Invalid number ";
+    private static final String errorMessage = "Error Message ";
 
     public SectionFragment() {
 
@@ -86,50 +90,56 @@ public class SectionFragment extends Fragment {
                                     argSectionNumber.equals("2") ? bundle : null, HttpMethod.GET,
                                     new GraphRequest.Callback() {
                                         public void onCompleted(GraphResponse response) {
-                                            if (response.getError() == null) {
-                                                try {
-                                                    JSONArray info = response.getJSONObject().getJSONArray("data");
-                                                    for (int i = 0; i < info.length(); i++) {
-                                                        JSONObject o = info.getJSONObject(i);
-                                                        String message = o.getString("message");
-                                                        String createdTime = o.getString("created_time");
-                                                        if (argSectionNumber.equals("2")) {
-                                                            fbPublishedPosta.append(message);
-                                                        }
-                                                        TextView view1 = new TextView(getActivity());
-                                                        view1.setText(message);
-                                                        view1.setTextSize(15);
-                                                        view1.setSingleLine(false);
-
-                                                        try {
-                                                            createdTime = new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a").format(
-                                                                    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(o.getString("created_time"))).toString();
-                                                        } catch (ParseException e) {
-                                                            Log.d(e.getMessage(), "Parse Error Message");
-                                                        }
-
-                                                        TextView tv2 = new TextView(getActivity());
-                                                        tv2.setText("(Created time: " + createdTime + ")");
-                                                        tv2.setTextColor(Color.parseColor("#B03060"));
-                                                        tv2.setTextSize(15);
-
-                                                        TableRow tr1 = new TableRow(getActivity());
-                                                        tr1.addView(view1);
-                                                        tr1.setPadding(0, 0, 0, 1);
-                                                        TableRow tr2 = new TableRow(getActivity());
-                                                        tr2.addView(tv2);
-                                                        tr2.setPadding(0, 0, 0, 15);
-                                                        tableLayout.addView(tr1, new TableLayout.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
-                                                        tableLayout.addView(tr2, new TableLayout.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
-                                                    }
-                                                } catch (JSONException e) {
-                                                    Log.d("JSON Exception", e.getMessage());
-                                                }
-                                            }
+                                            onNewGraphRequestComplete(response);
                                         }
                                     }).executeAsync();
                         } catch (JSONException e) {
-                            Log.d(e.getMessage(), "Error Message");
+                            Log.d(e.getMessage(), errorMessage);
+                        }
+                    }
+
+                    private void onNewGraphRequestComplete(GraphResponse response) {
+                        if (response.getError() != null) {
+                            return;
+                        }
+
+                        try {
+                            JSONArray info = response.getJSONObject().getJSONArray("data");
+                            for (int i = 0; i < info.length(); i++) {
+                                JSONObject o = info.getJSONObject(i);
+                                String message = o.getString("message");
+                                String createdTime = o.getString("created_time");
+                                if (argSectionNumber.equals("2")) {
+                                    fbPublishedPosta.append(message);
+                                }
+                                TextView view1 = new TextView(getActivity());
+                                view1.setText(message);
+                                view1.setTextSize(15);
+                                view1.setSingleLine(false);
+
+                                try {
+                                    createdTime = new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a").format(
+                                            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(o.getString("created_time"))).toString();
+                                } catch (ParseException e) {
+                                    Log.d(e.getMessage(), "Parse Error Message");
+                                }
+
+                                TextView tv2 = new TextView(getActivity());
+                                tv2.setText("(Created time: " + createdTime + ")");
+                                tv2.setTextColor(Color.parseColor("#AEBEE0"));
+                                tv2.setTextSize(15);
+
+                                TableRow tr1 = new TableRow(getActivity());
+                                tr1.addView(view1);
+                                tr1.setPadding(0, 0, 0, 1);
+                                TableRow tr2 = new TableRow(getActivity());
+                                tr2.addView(tv2);
+                                tr2.setPadding(0, 0, 0, 15);
+                                tableLayout.addView(tr1, new TableLayout.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+                                tableLayout.addView(tr2, new TableLayout.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+                            }
+                        } catch (JSONException e) {
+                            Log.d("JSON Exception", e.getMessage());
                         }
                     }
                 }
@@ -166,7 +176,7 @@ public class SectionFragment extends Fragment {
 
                     TextView tv2 = new TextView(getActivity());
                     tv2.setText("(Views: " + num_views + ", Likes: " + num_likes + ")");
-                    tv2.setTextColor(Color.parseColor("#B03060"));
+                    tv2.setTextColor(Color.parseColor("#AEBEE0"));
                     tv2.setTextSize(15);
 
                     TableRow tr1 = new TableRow(getActivity());
@@ -183,104 +193,98 @@ public class SectionFragment extends Fragment {
                 Log.d("JSON Exception", e.getMessage());
             }
         } else {
-            Log.d(response.getError().getErrorMessage(), "Error Message :");
+            Log.d(response.getError().getErrorMessage(), errorMessage);
         }
     }
 
     /**
      * This function will get Facebook Pages stats.
+     *
      * @param response
      * @param tableLayout
      */
 
     private void onCompletedForPageStats(GraphResponse response, TableLayout tableLayout) {
 
-        if (response.getError() == null) {
+        if (response.getError() != null) {
+            Log.d(response.getError().getErrorMessage(),errorMessage);
+            return;
+        }
+        try {
+            JSONObject insights = response.getJSONObject().getJSONObject("insights");
+            Log.d("Facebook Page Stats", insights.toString());
 
-            try {
-                JSONObject insights = response.getJSONObject().getJSONObject("insights");
-                Log.d("Facebook Page Stats", insights.toString());
+            JSONArray data = insights.getJSONArray("data");
 
-                JSONArray data = insights.getJSONArray("data");
+            TextView tv = new TextView(getActivity());
+            tv.setText("Monthly Stats");
+            tv.setTextColor(Color.parseColor("#000000"));
+            tv.setTextSize(20);
 
-                TextView tv = new TextView(getActivity());
-                tv.setText("Monthly Stats");
-                tv.setTextColor(Color.parseColor("#000000"));
-                tv.setTextSize(20);
+            TableRow tr = new TableRow(getActivity());
+            tr.addView(tv);
+            tr.setPadding(0, 0, 0, 25);
 
-                TableRow tr = new TableRow(getActivity());
-                tr.addView(tv);
-                tr.setPadding(0, 0, 0, 25);
+            tableLayout.addView(tr, new TableLayout.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
 
-                tableLayout.addView(tr, new TableLayout.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject obj = data.getJSONObject(i);
 
-                for (int i = 0; i < data.length(); i++) {
-                    JSONObject obj = data.getJSONObject(i);
+                String name = obj.getString("name");
+                String values = obj.getJSONArray("values").getJSONObject(0).getString("value");
 
-                    String name = obj.getString("name");
-                    String values = obj.getJSONArray("values").getJSONObject(0).getString("value");
+                if (name.equals("page_positive_feedback_by_type")) {
+                    String num_likes = obj.getJSONArray("values").getJSONObject(0).getJSONObject("value").getString("like");
+                    String num_comments = obj.getJSONArray("values").getJSONObject(0).getJSONObject("value").getString("comment");
 
-                    if (name.equals("page_positive_feedback_by_type")) {
-                        String num_likes = obj.getJSONArray("values").getJSONObject(0).getJSONObject("value").getString("like");
-                        String num_comments = obj.getJSONArray("values").getJSONObject(0).getJSONObject("value").getString("comment");
+                    TextView tv0 = new TextView(getActivity());
+                    tv0.setText("page positive feedback by type" + ": ");
+                    tv0.setTextColor(Color.parseColor("#AEBEE0"));
+                    tv0.setTextSize(20);
 
-                        TextView tv0 = new TextView(getActivity());
-                        tv0.setText("page positive feedback by type" + ": ");
-                        tv0.setTextColor(Color.parseColor("#B03060"));
-                        tv0.setTextSize(20);
+                    TableRow tr0 = new TableRow(getActivity());
+                    tr0.addView(tv0);
+                    tr0.setPadding(0, 0, 0, 15);
 
-                        TableRow tr0 = new TableRow(getActivity());
-                        tr0.addView(tv0);
-                        tr0.setPadding(0, 0, 0, 15);
+                    TextView tv1 = new TextView(getActivity());
+                    tv1.setText("       Like" + ": " + num_likes);
+                    tv1.setTextColor(Color.parseColor("#AEBEE0"));
+                    tv1.setTextSize(20);
 
-                        TextView tv1 = new TextView(getActivity());
-                        tv1.setText("       Like" + ": " + num_likes);
-                        tv1.setTextColor(Color.parseColor("#B03060"));
-                        tv1.setTextSize(20);
+                    TableRow tr1 = new TableRow(getActivity());
+                    tr1.addView(tv1);
+                    tr1.setPadding(0, 0, 0, 15);
 
-                        TableRow tr1 = new TableRow(getActivity());
-                        tr1.addView(tv1);
-                        tr1.setPadding(0, 0, 0, 15);
+                    TextView tv2 = new TextView(getActivity());
+                    tv2.setText("       Comment" + ": " + num_comments);
+                    tv2.setTextColor(Color.parseColor("#AEBEE0"));
+                    tv2.setTextSize(20);
 
-                        TextView tv2 = new TextView(getActivity());
-                        tv2.setText("       Comment" + ": " + num_comments);
-                        tv2.setTextColor(Color.parseColor("#B03060"));
-                        tv2.setTextSize(20);
+                    TableRow tr2 = new TableRow(getActivity());
+                    tr2.addView(tv2);
+                    tr2.setPadding(0, 0, 0, 15);
 
-                        TableRow tr2 = new TableRow(getActivity());
-                        tr2.addView(tv2);
-                        tr2.setPadding(0, 0, 0, 15);
+                    tableLayout.addView(tr0, new TableLayout.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+                    tableLayout.addView(tr1, new TableLayout.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+                    tableLayout.addView(tr2, new TableLayout.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
 
-                        tableLayout.addView(tr0, new TableLayout.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
-                        tableLayout.addView(tr1, new TableLayout.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
-                        tableLayout.addView(tr2, new TableLayout.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+                } else {
+                    name = name.replace("_", " ");
+                    TextView tv1 = new TextView(getActivity());
+                    tv1.setText(name + ": " + values);
+                    tv1.setTextColor(Color.parseColor("#B03060"));
+                    tv1.setTextSize(20);
 
-                    } else {
-                                                                    /*switch (statsName){
-                                                                        case "page_impressions": statsName = "Page Impressions"; break;
-                                                                        case "page_impressions_unique": statsName = "Unique Page Impressions"; break;
-                                                                        case "page_engaged_users": statsName = "Page Engaged Users"; break;
-                                                                        case "page_views_total": statsName = "Page Views Total"; break;
-                                                                    }*/
-                        name = name.replace("_", " ");
-                        TextView tv1 = new TextView(getActivity());
-                        tv1.setText(name + ": " + values);
-                        tv1.setTextColor(Color.parseColor("#B03060"));
-                        tv1.setTextSize(20);
-
-                        TableRow tr1 = new TableRow(getActivity());
-                        tr1.addView(tv1);
-                        tr1.setPadding(0, 0, 0, 15);
-                        tableLayout.addView(tr1, new TableLayout.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
-                    }
-
+                    TableRow tr1 = new TableRow(getActivity());
+                    tr1.addView(tv1);
+                    tr1.setPadding(0, 0, 0, 15);
+                    tableLayout.addView(tr1, new TableLayout.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
                 }
 
-            } catch (JSONException e) {
-                Log.d("JSON Exception", e.getMessage());
             }
-        } else {
-            Log.d(response.getError().getErrorMessage(), "Error Message :");
+
+        } catch (JSONException e) {
+            Log.d("JSON Exception", e.getMessage());
         }
     }
 
@@ -290,45 +294,61 @@ public class SectionFragment extends Fragment {
      * ARGS_SECTION_NUMBER is 4 or 3.
      */
 
-    private GraphRequest getGraphRequestForViewsAndLikes(final TableLayout tableLayout, final String ARG_SECTION_NUMBER) {
-
-        GraphRequest requestForViewsAndLikes =
+    private GraphRequestAsyncTask getGraphRequestForViewsAndLikes(final TableLayout tableLayout, final String ARG_SECTION_NUMBER) {
+        GraphRequestAsyncTask requestForViewsAndLikes =
                 new GraphRequest(
                         AccessToken.getCurrentAccessToken(),
-                        "/me/accounts",
+                        accountPath,
                         null,
                         HttpMethod.GET,
                         new GraphRequest.Callback() {
                             public void onCompleted(GraphResponse response) {
-                                JSONObject JsonObject = response.getJSONObject();
-                                try {
-                                    JSONArray infos = JsonObject.getJSONArray("data");
-                                    JSONObject objectinfos = infos.getJSONObject(0);
-                                    String accessToken = objectinfos.getString("access_token");
-
-                                    Bundle bundle = new Bundle();
-                                    bundle.putString("fields", "message,insights.metric(post_impressions,post_reactions_like_total)");
-
-                                    new GraphRequest(AccessToken.getCurrentAccessToken(), getPublishedFeedPath, bundle, HttpMethod.GET,
-                                            new GraphRequest.Callback() {
-                                                @Override
-                                                public void onCompleted(GraphResponse response) {
-                                                    if (ARG_SECTION_NUMBER.equals("4")) {
-                                                        onCompletedForViewsAndLikes(response, tableLayout);
-                                                    }
-                                                    if (ARG_SECTION_NUMBER.equals("3")) {
-                                                        onCompletedForPageStats(response, tableLayout);
-                                                    }
-                                                }
-                                            }).executeAsync();
-
-                                } catch (JSONException j) {
-                                    Log.d(j.getMessage(), "Error Message");
-                                }
+                                onRequestComplete(response, ARG_SECTION_NUMBER, tableLayout);
                             }
                         }
-                );
+                ).executeAsync();
         return requestForViewsAndLikes;
+    }
+
+    private void onRequestComplete(GraphResponse response, final String ARG_SECTION_NUMBER, final TableLayout tableLayout) {
+        JSONObject JsonObject = response.getJSONObject();
+        try {
+            JSONArray infos = JsonObject.getJSONArray("data");
+            JSONObject objectinfos = infos.getJSONObject(0);
+            String accessToken = objectinfos.getString("access_token");
+
+            Bundle bundle = new Bundle();
+            if (ARG_SECTION_NUMBER.equals("4")) {
+                bundle.putString("fields", "message,insights.metric(post_impressions,post_reactions_like_total)");
+            }
+            if (ARG_SECTION_NUMBER.equals("3")) {
+                bundle.putString("fields", "insights.metric(page_impressions, page_views_total, page_impressions_unique, " +
+                        "page_engaged_users, page_positive_feedback_by_type).date_preset(today)");
+
+            }
+            // Get the aceestoken object for page
+            final AccessToken accessToken_obj = new AccessToken(accessToken, AccessToken.getCurrentAccessToken().getApplicationId(),
+                    AccessToken.getCurrentAccessToken().getUserId(), AccessToken.getCurrentAccessToken().getPermissions(),
+                    AccessToken.getCurrentAccessToken().getDeclinedPermissions(), AccessToken.getCurrentAccessToken().getSource(),
+                    AccessToken.getCurrentAccessToken().getExpires(), AccessToken.getCurrentAccessToken().getLastRefresh());
+
+            new GraphRequest(accessToken_obj, ARG_SECTION_NUMBER.equals("4") ? getPublishedPosts : getPage, bundle, HttpMethod.GET,
+                    new GraphRequest.Callback() {
+                        @Override
+                        public void onCompleted(GraphResponse response) {
+                            if (ARG_SECTION_NUMBER.equals("4")) {
+                                onCompletedForViewsAndLikes(response, tableLayout);
+                                return;
+                            }
+                            if (ARG_SECTION_NUMBER.equals("3")) {
+                                onCompletedForPageStats(response, tableLayout);
+                            }
+                        }
+                    }).executeAsync();
+
+        } catch (JSONException j) {
+            Log.d(j.getMessage(), "Error Message");
+        }
     }
 
 
@@ -343,32 +363,25 @@ public class SectionFragment extends Fragment {
         View rootView = layoutInflater.inflate(R.layout.fragment_view_posts, container, false);
         final TableLayout tableLayout = (TableLayout) rootView.findViewById(R.id.maintable);
         final StringBuilder publishedPosts = new StringBuilder();
-        final StringBuilder unPublishedPosts = new StringBuilder();
-        GraphRequestAsyncTask graphRequest;
+
         int n = getArguments().getInt(argSectionNumber);
         switch (n) {
             case 1:
                 getGraphRequest(tableLayout, "1", publishedPosts);
-                return rootView;
+                break;
             case 2:
                 getGraphRequest(tableLayout, "2", publishedPosts);
-                return rootView;
+                break;
             case 3:
                 getGraphRequestForViewsAndLikes(tableLayout, "3");
-                return rootView;
+                break;
             case 4:
                 getGraphRequestForViewsAndLikes(tableLayout, "4");
-                return rootView;
+                break;
             default:
-                throw new IllegalStateException("Invalid number " + n);
+                throw new IllegalStateException(invalidNumber + n);
         }
-    }
-
-    public void getLikes(AccessToken accessToken_obj, String postID, GraphRequest.Callback callback) {
-        Bundle params = new Bundle();
-        params.putBoolean("summary", true);
-        GraphRequest likesRequest = new GraphRequest(accessToken_obj, "/" + postID + "/likes", params, HttpMethod.GET, callback);
-        likesRequest.executeAsync();
+        return rootView;
     }
 }
 

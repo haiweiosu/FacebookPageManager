@@ -19,7 +19,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final List<String> PERMISSIONS = Arrays.asList("manage_pages", "publish_actions", "publish_pages");
+    private static final List<String> PERMISSIONS = Arrays.asList("manage_pages", "publish_actions", "publish_pages", "read_insights");
     protected LoginButton loginButton;
     CallbackManager callbackManager;
 

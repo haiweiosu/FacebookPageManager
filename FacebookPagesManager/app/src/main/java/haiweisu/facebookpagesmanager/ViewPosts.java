@@ -34,7 +34,7 @@ public class ViewPosts extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        fbFragmentPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
+        this.fbFragmentPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
                 return SectionFragment.newInstance(position + 1);
@@ -61,8 +61,8 @@ public class ViewPosts extends AppCompatActivity {
             }
         };
 
-        fbViewPager = (ViewPager) findViewById(R.id.container);
-        fbViewPager.setAdapter(fbFragmentPagerAdapter);
+        this.fbViewPager = (ViewPager) findViewById(R.id.container);
+        this.fbViewPager.setAdapter(this.fbFragmentPagerAdapter);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(fbViewPager);
     }
@@ -81,7 +81,6 @@ public class ViewPosts extends AppCompatActivity {
 
     /**
      * This function will control the action clicked from action bar.
-     *
      * @param item
      * @return true
      */
@@ -95,10 +94,5 @@ public class ViewPosts extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public StringBuilder getPublishedPosts() {
-        StringBuilder publishedPosts = new StringBuilder();
-        return publishedPosts;
     }
 }
